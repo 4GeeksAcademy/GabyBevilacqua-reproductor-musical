@@ -1,25 +1,55 @@
-import React from "react";
-
-//include images into your bundle
-import rigoImage from "../../img/rigo-baby.jpg";
+import React, { useEffect, useRef, useState } from "react";
+import { Player } from "./Player";
+import { element } from "prop-types";
 
 //create your first component
 const Home = () => {
+	const [song, setSong] = useState([])
+	const [currentSong, setCurrentSong] = useState()
+	const [playing, setPlaying] = useState(false)
+
+	const audioElement = useRef()
+
+	useEffect(() => {
+		getData()
+	}, [])
+
+	const getData = async () => {
+		try{
+			const response = await fetch("https://playground.4geeks.com/sound/all")
+			const data = await response.json()
+			setSong(await data)
+			console.log(data)
+		} catch (error) {
+			console.error("error---->", error)
+		}
+	}
+
+	const handleSelectedSong = (element) => {
+		setCurrentSong(element)
+	}
+
 	return (
-		<div className="text-center">
-			<h1 className="text-center mt-5">Hello Rigo!</h1>
-			<p>
-				<img src={rigoImage} />
-			</p>
-			<a href="#" className="btn btn-success">
-				If you see this green button... bootstrap is working...
-			</a>
-			<p>
-				Made by{" "}
-				<a href="http://www.4geeksacademy.com">4Geeks Academy</a>, with
-				love!
-			</p>
-		</div>
+		<section className="text-center container bg-dark text-white">
+			<section>
+				
+				<ul>
+					{song.songs?.map((element, id) => <li key={id} onClick={() => handleSelectedSong(song.songs[id])}>{element.name}</li>)}
+				</ul>
+			</section>
+			<section>
+				<audio 
+				hidden
+				src={currentSong && "https://playground.4geeks.com/sound/songs" + currentSong.url}
+				ref={audioElement}
+				autoPlay
+				/>
+				<Player
+				currentSong={currentSong}
+				playing={playing} 
+				/>
+			</section>
+		</section>
 	);
 };
 
