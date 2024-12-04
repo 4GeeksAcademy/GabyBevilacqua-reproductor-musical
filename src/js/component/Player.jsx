@@ -1,9 +1,14 @@
 import React from "react";
 
 
-export const Player = ({ currentSong, playing }) => {
+export const Player = ({ currentSong, isPlaying, setIsPlaying }) => {
+    console.log(isPlaying)
 
+    const PlayPause = () => {
+        setIsPlaying(!isPlaying)
 
+        console.log(isPlaying)
+    }
     return (
 
         <div>
@@ -20,8 +25,8 @@ export const Player = ({ currentSong, playing }) => {
                     </span>
                 </div>
                 <div className="mx-2">
-                    <span>
-                        <i className={`${playing? "fa-solid fa-pause" : "fa-solid fa-play"}`}/>
+                    <span onClick={PlayPause}>
+                        <i className={`${isPlaying? "fa-solid fa-pause" : "fa-solid fa-play"}`}/>
                     </span>
                 </div>
                 <div className="mx-2">
