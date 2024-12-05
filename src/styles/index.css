@@ -1,12 +1,13 @@
+.navigation{
+    height: 1rem;
+    background-color: black;
+}
 
-/* 
+.seeker{
+    height: 0.9rem;
+    background-color: rgb(127, 172, 255);
+}
 
-    You can write your own styles here...
-    
-    
-    ...Or you can use the import command to include 
-    other sylesheets into your bunde as well, e.j:
-    
-    import 'relative/path/to/stylesheet.scss';
-
-*/
+.playlist{
+    height: 100vh;
+}

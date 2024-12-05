@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Player } from "./Player";
-import { element } from "prop-types";
 
 //create your first component
 const Home = () => {
@@ -9,16 +8,15 @@ const Home = () => {
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [loop, setLoop] = useState(false);
 	const [shuffle, setShuffle] = useState(false);
-
-	const audioElem = useRef()
+	const audioElem = useRef();
 
 	useEffect(() => {
 		getData()
 	}, [])
 
-	useEffect(()=>{
-		isPlaying? audioElem.current.play() : audioElem.current.pause();
-	},[isPlaying])
+	useEffect(() => {
+		isPlaying ? audioElem.current.play() : audioElem.current.pause();
+	}, [isPlaying])
 
 	const getData = async () => {
 		try {
@@ -45,12 +43,19 @@ const Home = () => {
 		shuffle ?
 			random()
 			:
-			setCurrentSong(song.songs[getIndex() + 1])
+			song.songs.length === getIndex() + 1
+				?
+				setCurrentSong(song.songs[0])
+				:
+				setCurrentSong(song.songs[getIndex() + 1])
 		setIsPlaying(true)
 	}
 
 	const prev = () => {
-		setCurrentSong(song.songs[getIndex() - 1])
+		0 === getIndex() ?
+			setCurrentSong(song.songs[song.songs.length - 1])
+			:
+			setCurrentSong(song.songs[getIndex() - 1])
 		setIsPlaying(true)
 	}
 
@@ -59,36 +64,57 @@ const Home = () => {
 		setIsPlaying(true)
 	}
 
-	return (
-		<section className="text-center container bg-dark text-white">
-			<section>
+	const onPlaying = () => {
+		const duration = audioElem.current.duration;
+		const current = audioElem.current.currentTime;
+		setCurrentSong({
+			...currentSong,
+			progress: (current / duration) * 100,
+			length: duration,
+			current: current
+		});
+	}
 
-				<ul>
-					{song.songs?.map((elem, id) => <li key={id} onClick={() => handleSelectedSong(song.songs[id])}>{elem.name}</li>)}
-				</ul>
+	return (
+		<div className="text-center container bg-dark text-white mt-3 pt-3">
+			<h1>Reproductor de música de canciones de juegos:</h1>
+			<section className="text-center container bg-dark text-white d-flex aling-items-center">				
+				<section className="d-flex container col-3 mt-3">
+					<div className="playlist overFlow-y-auto">
+						<ul className="list-group">
+							{song.songs?.map((elem, id) => <li className={`text-white list-group-item bg-dark ${currentSong && elem.name === currentSong.name ? "active" : ""}`} key={id} onClick={() => handleSelectedSong(song.songs[id])}>{elem.name}</li>)}
+						</ul>
+					</div>
+				</section>
+
+				<section className="container d-flex col-9">
+					<audio
+						hidden
+						src={currentSong && "https://playground.4geeks.com" + currentSong.url}
+						ref={audioElem}
+						autoPlay
+						loop={loop}
+						onPlaying={onPlaying}
+						onEnded={next}
+						onTimeUpdate={onPlaying}
+					/>
+					<Player
+						currentSong={currentSong}
+						isPlaying={isPlaying}
+						setIsPlaying={setIsPlaying}
+						audioElem={audioElem}
+						setSong={setSong}
+						next={next}
+						prev={prev}
+						loop={loop}
+						setLoop={setLoop}
+						shuffle={shuffle}
+						setShuffle={setShuffle}
+						random={random}
+					/>
+				</section>
 			</section>
-			<section>
-				<audio
-					hidden
-					src={currentSong && "https://playground.4geeks.com/sound/songs" + currentSong.url}
-					ref={audioElem}
-					autoPlay
-				/>
-				<Player
-					currentSong={currentSong}
-					isPlaying={isPlaying}
-					setIsPlaying={setIsPlaying}
-					audioElem={audioElem}
-					setSong={setSong()}
-					next={next}
-					prev={prev}
-					loop={loop}
-					setLoop={setLoop}
-					shuffle={shuffle}
-					setShuffle={setShuffle}
-				/>
-			</section>
-		</section>
+		</div>
 	);
 };
 
